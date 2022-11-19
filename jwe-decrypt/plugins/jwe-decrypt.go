@@ -12,15 +12,16 @@ import (
 	"github.com/Kong/go-pdk"
 	"github.com/Kong/go-pdk/server"
 
-	"gopkg.in/square/go-jose.v2"
+	//"gopkg.in/square/go-jose.v2"
+	"github.com/square/go-jose/v3"
 )
 
 func main() {
 	server.StartServer(New, Version, Priority)
 }
 
-var Version = "0.1"
-var Priority = 1
+var Version = "0.2"
+var Priority = 1500
 
 // Property of the Plugin
 type Config struct {
@@ -99,14 +100,15 @@ func (conf Config) Access(kong *pdk.PDK) {
 	kong.Log.Notice("JWE found in 'Authorization' header=", JWE)
 
 	// Decrypt JWE payload
-	var JWT = decrypt(kong, conf.PrivateKey, JWE)
-	if JWT == "" {
+	var JWS = decrypt(kong, conf.PrivateKey, JWE)
+	if JWS == "" {
 		kong.Log.Err("Unable to decrypt JWE payload")
 		kong.Response.Exit(500, `{"Error": "Unable to decrypt JWE payload"}`, header)
 	}
+	kong.Log.Notice("Decrypted JWS=", JWS)
 
 	// replace the JWE by the JWT in the Authorization header
-	kong.ServiceRequest.SetHeader("Authorization", "Bearer "+JWT)
+	kong.ServiceRequest.SetHeader("Authorization", "Bearer "+JWS)
 
 	kong.Log.Notice("*** jwe-decrypt - End Access() ***")
 }

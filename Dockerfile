@@ -1,5 +1,5 @@
 # docker build -t kong-gateway-jwe-decrypt .
-FROM kong/kong-gateway:3.0.1.0-alpine
+FROM kong/kong-gateway:amd64-3.0.1.0-alpine
 USER root
 
 #RUN apk update && apk add git nodejs npm go musl-dev libffi-dev gcc g++ file make \
